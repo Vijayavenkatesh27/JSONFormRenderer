@@ -1,21 +1,30 @@
-//
-//  ContentView.swift
-//  JSONFormRenderer
-//
-//  Created by bitcot on 24/05/26.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = DynamicFormViewModel()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if let form = viewModel.form {
+                DynamicFormScreen(viewModel: viewModel, form: form)
+            } else {
+                VStack(spacing: 16) {
+                    if let loadError = viewModel.loadError {
+                        Text(loadError)
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(.red)
+
+                        Button("Retry") {
+                            viewModel.loadForm()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    } else {
+                        ProgressView("Loading form...")
+                    }
+                }
+                .padding()
+            }
         }
-        .padding()
     }
 }
 
